@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<!-- The default patterns etc -->
+	<include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+	<!--If local-logging is not active, we will set a threshold on the appender to avoid output
+	But this means the logging level is still active outside of the specific appender (but there is only one) -->
+	<springProfile name="!local-logging">
+		<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+			<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+				<!-- Disable output-->
+				<level>OFF</level>
+			</filter>
+			<encoder>
+				<pattern>${CONSOLE_LOG_PATTERN}</pattern>
+				<charset>${CONSOLE_LOG_CHARSET}</charset>
+			</encoder>
+		</appender>
+	</springProfile>
+
+	<!-- If local-logging is active, it will do all the defaults from Spring -->
+	<springProfile name="local-logging">
+		<include resource="org/springframework/boot/logging/logback/console-appender.xml" />
+	</springProfile>
+
+	<root level="INFO">
+		<appender-ref ref="CONSOLE" />
+	</root>	
+</configuration>

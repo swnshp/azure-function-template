@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.seanwinship.azure-functions</groupId>
+    <artifactId>azure-function-template</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <properties>
+        <azure.functions.maven.plugin.version>1.36.0</azure.functions.maven.plugin.version>
+        <azure.functions.java.library.version>3.1.0</azure.functions.java.library.version>        
+        <java.version>17</java.version>
+        <functionAppName>sxw-azure-function-template</functionAppName>
+        <start-class>com.seanwinship.azurefunctiontemplate.AzureFunctionTemplateApplication</start-class>
+    </properties>
+
+    <!--Spring Boot Starter Parent will manage the spring dependecy versions for us -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <!-- This is the latest version that is supported right now, 3.4.0 has dependency on GSON 2.11.0 however an earlier 
+        version of GSON is included in the Azure Functions Java Worker.  This will cause all sorts of initialization issues -->
+        <version>3.3.0</version>
+        <relativePath/>
+    </parent>    
+
+    <dependencies>
+        <!-- Required: for the Azure Functions Library-->
+        <dependency>
+            <groupId>com.microsoft.azure.functions</groupId>
+            <artifactId>azure-functions-java-library</artifactId>
+            <version>${azure.functions.java.library.version}</version>
+        </dependency>
+
+        <!-- Required: for Spring Cloud Functions; note: this excludes spring-boot-starter-logging -->
+        <!-- For history, see https://github.com/spring-cloud/spring-cloud-function/issues/945 but this does not appear an active issue -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-function-adapter-azure</artifactId>
+            <version>4.2.0</version>
+        </dependency>
+
+        <!-- Optional: Use logback for logging including Spring default configuration and profile support -->
+        <!-- This is mandatory for our projects to ensure the best level of Application Insights integration -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-logging</artifactId>
+        </dependency>
+
+        <!-- Optional: Lombok provides some convenience annotations, we'll use the version that Spring uses -->        
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.microsoft.azure</groupId>
+                <artifactId>azure-functions-maven-plugin</artifactId>
+                <version>${azure.functions.maven.plugin.version}</version>
+                <configuration>
+                    <appName>${functionAppName}</appName>
+                    <resourceGroup>java-functions-group</resourceGroup>
+                     <region>northeurope</region>
+                     <appServicePlanName>java-functions-app-service-plan</appServicePlanName>
+                     <runtime>
+                         <os>linux</os>
+                        <javaVersion>17</javaVersion>
+                    </runtime>
+                    <appSettings>
+                        <property>
+                            <name>FUNCTIONS_EXTENSION_VERSION</name>
+                            <value>~4</value>
+                        </property>
+                    </appSettings>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>package-functions</id>
+                        <goals>
+                            <goal>package</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>obj</directory>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
