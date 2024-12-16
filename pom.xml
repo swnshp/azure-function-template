@@ -21,9 +21,12 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <!-- This is the latest version that is supported right now, 3.4.0 has dependency on GSON 2.11.0 however an earlier 
-        version of GSON is included in the Azure Functions Java Worker.  This will cause all sorts of initialization issues -->
-        <version>3.3.0</version>
+        <!-- We can use 3.3.0
+        Or Exclude this Bean org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration.class
+        Due to a conflict between the GSON library included in the Azure Functions Java Worker being too early
+        for the version required by the Auto Configuration
+        If your project is using GSON it will not be auto configured  -->
+        <version>3.4.0</version>
         <relativePath/>
     </parent>    
 
