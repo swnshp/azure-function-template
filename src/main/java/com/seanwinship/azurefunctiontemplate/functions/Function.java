@@ -1,4 +1,4 @@
-package com.seanwinship.azurefunctiontemplate;
+package com.seanwinship.azurefunctiontemplate.functions;
 
 import java.util.Optional;
 
